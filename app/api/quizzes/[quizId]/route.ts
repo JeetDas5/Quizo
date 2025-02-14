@@ -1,44 +1,28 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, { params }: { params: { quizId: string } }) {
   try {
-    const { id } = await params;
-
-    const user = await prisma.user.findUnique({
-      where: { id },
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: params.quizId },
     });
 
-    if (!user) {
-      return NextResponse.json(
-        {
-          error: "User not found",
-        },
-        {
-          status: 404,
-        }
-      );
+    if (!quiz) {
+      return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
     }
 
-    const quizzes = await prisma.quiz.findMany({
-      where: {
-        userId: id,
-      },
-    });
-
-    return NextResponse.json({ quizzes }, { status: 200 });
-  } catch (error) {}
+    return NextResponse.json({ success: true, quiz });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to fetch quiz" }, { status: 500 });
+  }
 }
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { quizId: string } }
 ) {
   try {
-    const quizId = params.id;
+    const quizId = params.quizId;
     const { title, description } = await req.json();
 
     const existingQuiz = await prisma.quiz.findUnique({
@@ -75,10 +59,10 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { quizId: string } }
 ) {
   try {
-    const quizId = await params.id;
+    const quizId = await params.quizId;
 
     const existingQuiz = prisma.quiz.findUnique({
       where: { id: quizId },
