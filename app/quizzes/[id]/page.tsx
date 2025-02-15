@@ -76,6 +76,10 @@ export default function EditQuizPage() {
         toast.error("Quiz not found!");
         router.push("/dashboard");
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, [quizId, userId, setValue, router]);
 
   const onSubmit = async (data: QuizFormData) => {
@@ -122,9 +126,18 @@ export default function EditQuizPage() {
               )}
             </div>
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Updating..." : "Update Quiz"}
-            </Button>
+            <div className="flex justify-between gap-2">
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "Updating..." : "Update Quiz"}
+              </Button>
+              <Button
+                type="button"
+                className="w-full bg-gray-500 hover:bg-gray-600 text-white"
+                onClick={() => router.push("/dashboard")}
+              >
+                Cancel
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>

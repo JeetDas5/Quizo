@@ -6,8 +6,9 @@ export async function GET(
   { params }: { params: { userId: string } }
 ) {
   try {
+    const userId = params.userId
     const quizzes = await prisma.quiz.findMany({
-      where: { userId: params.userId },
+      where: { userId },
     });
 
     return NextResponse.json({ success: true, quizzes });

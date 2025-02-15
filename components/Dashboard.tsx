@@ -33,7 +33,22 @@ export default function Dashboard() {
   const [selectedQuiz, setSelectedQuiz] = useState<string | null>(null);
   const router = useRouter();
 
-  const userId = localStorage.getItem("userId");
+  const getUserId = () => {
+    const userId = localStorage.getItem("userId");
+    const expiryTime = localStorage.getItem("userExpiry");
+
+    if (!userId || !expiryTime) return null;
+
+    if (Date.now() > Number(expiryTime)) {
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userExpiry");
+      return null;
+    }
+
+    return userId;
+  };
+
+  const userId = getUserId();
 
   useEffect(() => {
     const fetchQuizzes = async () => {
@@ -50,9 +65,9 @@ export default function Dashboard() {
     fetchQuizzes();
   }, []);
 
-  const handleEdit = async(id:string)=>{
+  const handleEdit = async (id: string) => {
     router.push(`/quizzes/${id}`);
-  }
+  };
 
   const handleDelete = async () => {
     if (!selectedQuiz) return;
@@ -71,7 +86,9 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen p-6 bg-background text-foreground">
       <h1 className="text-2xl font-bold mb-4">Your Quizzes</h1>
-      <Button onClick={() => router.push("/quizzes/create")}>+ Create Quiz</Button>
+      <Button onClick={() => router.push("/quizzes/create")} className="mb-2">
+        + Create Quiz
+      </Button>
 
       {loading ? (
         <Skeleton className="h-40 w-full bg-muted" />
@@ -92,10 +109,7 @@ export default function Dashboard() {
                   Created: {new Date(quiz.createdAt).toLocaleDateString()}
                 </p>
                 <div className="flex gap-2 mt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => handleEdit(quiz.id)}
-                  >
+                  <Button variant="outline" onClick={() => handleEdit(quiz.id)}>
                     Edit
                   </Button>
                   <AlertDialog>

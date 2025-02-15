@@ -50,7 +50,7 @@ export default function CreateQuiz() {
     }
 
     try {
-      const response = await axios.post("/api/quizzes", { ...data, userId });
+      await axios.post("/api/quizzes", { ...data, userId });
       toast.success("Quiz created successfully!");
       router.push("/dashboard");
     } catch (error) {
@@ -92,9 +92,18 @@ export default function CreateQuiz() {
               )}
             </div>
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create Quiz"}
-            </Button>
+            <div className="flex gap-4">
+              <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                {isSubmitting ? "Creating..." : "Create Quiz"}
+              </Button>
+              <Button
+                type="button"
+                className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
+                onClick={() => router.push("/dashboard")}
+              >
+                Cancel
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
