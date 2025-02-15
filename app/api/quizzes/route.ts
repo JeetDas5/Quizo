@@ -42,10 +42,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, quiz: quiz }, { status: 201 });
-  } catch (error) {
+  } catch (error:any) {
     return NextResponse.json(
       {
         error: "Something went wrong while creating the quiz",
+        message: error.message,
       },
       {
         status: 500,
@@ -63,10 +64,11 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json({ success: true, quizzes });
-  } catch (error) {
+  } catch (error:any) {
     return NextResponse.json(
       {
         error: "Something went wrong while fetching the quizzes",
+        message: error.message,
       },
       {
         status: 500,

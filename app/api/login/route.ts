@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       { message: "Login successful", userId: user.id },
       { status: 200 }
     );
-  } catch (error) {
-    return NextResponse.json({ message: "Invalid request" }, { status: 400 });
+  } catch (error:any) {
+    return NextResponse.json({ error: "Invalid request",message: error.message }, { status: 400 });
   }
 }
