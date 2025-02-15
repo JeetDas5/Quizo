@@ -35,7 +35,6 @@ export default function Dashboard() {
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    // This code runs only on the client side
     const getUserId = () => {
       const userId = localStorage.getItem("userId");
       const expiryTime = localStorage.getItem("userExpiry");

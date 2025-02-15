@@ -50,14 +50,25 @@ Highlight the key features of your project:
 
 - User authentication and authorization.
 - Create, read, update, and delete quizzes.
-- Responsive design for mobile and desktop.
+- Responsive design for mobile and desktop with shadcn.
 - Integration with a database using Prisma.
+
+## Technologies Used
+
+- Next.js
+- Node.js
+- Prisma
+- PostgreSQL
+- Tailwind CSS
+- Typescript
+
 
 ## Contributing
 
 Provide guidelines for contributing to your project:
 
 1. Fork the repository.
+
 2. Create a new branch:
    ```bash
    git checkout -b feature/your-feature-name
@@ -101,31 +112,176 @@ http://localhost:3000/api
 
 ---
 
+## Authentication
+
+This API requires authentication via JWT tokens. Include your token in the `Authorization` header:
+
+```
+Authorization: Bearer <your_token>
+```
+
+---
 
 ## Endpoints
 
-### 1. Get a Quiz by ID
-**Endpoint:**  
-```
-GET /api/quizzes/{quizId}
-```
-**Description:**  
-Retrieves a quiz by its unique ID.
+### 1. User Authentication
 
-**Request Parameters:**  
-- `quizId` (path) - Required, the unique ID of the quiz.
+#### 1.1 Register a New User
 
-**Response:**  
+**Endpoint:**
+```
+POST /api/register
+```
+**Description:**
+Registers a new user.
+
+**Request Body:**
+```json
+{
+  "username": "teacher",
+  "password": "password"
+}
+```
+
+**Response:**
+```json
+{
+    "message": "User registered successfully",
+    "user": {
+        "id": "87b54f53-a2d1-40ce-bf0f-a41a6e44ad80",
+        "username": "jeet",
+        "password": "jeetdas"
+    }
+}
+```
+
+**Error Responses:**
+```json
+{
+  "error": "Username already exists"
+}
+```
+
+#### 1.2 User Login
+
+**Endpoint:**
+```
+POST /api/login
+```
+**Description:**
+Authenticates a user and returns a session.
+
+**Request Body:**
+```json
+{
+  "username": "teacher",
+  "password": "password"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Login successful",
+}
+```
+
+**Error Responses:**
+```json
+{
+  "error": "Invalid credentials"
+}
+```
+
+---
+### Quiz
+
+### 2.1 Create a Quiz
+
+**Endpoint:**
+```
+POST /api/quizzes
+```
+**Description:**
+Creates a new quiz.
+
+**Request Body:**
+```json
+{
+  "title": "Sample Quiz",
+  "description": "A test quiz",
+  "userId": "1000"
+}
+```
+
+**Response:**
 ```json
 {
     "success": true,
     "quiz": {
-        "id": "440b0e0c-53cf-4f9f-beff-4877b19a357c",
+        "id": "f5a21fe1-cf12-4628-8b29-6bf47f367815",
         "title": "test question 2",
         "description": "test desc 2",
         "userId": "1000",
-        "createdAt": "2025-02-14T18:50:07.896Z"
+        "createdAt": "2025-02-14T10:34:21.232Z"
     }
+}
+```
+
+---
+
+### 2.2 Get All Quizzes
+
+**Endpoint:**
+```
+GET /api/quizzes
+```
+**Description:**
+Retrieves all available quizzes.
+
+**Response:**
+```json
+{
+  "success": true,
+  "quizzes": [
+    {
+      "id": "123",
+      "title": "Sample Quiz",
+      "description": "A test quiz"
+    },
+    {
+      "id": "124",
+      "title": "Another Quiz",
+      "description": "Another test quiz"
+    }
+  ]
+}
+```
+
+---
+
+### 2.3 Get a Quiz by ID
+
+**Endpoint:**
+```
+GET /api/quiz/{quizId}
+```
+**Description:**
+Retrieves a quiz by its unique ID.
+
+**Request Parameters:**
+- `quizId` (path) - Required, the unique ID of the quiz.
+
+**Response:**
+```json
+{
+  "success": true,
+  "quiz": {
+    "id": "123",
+    "title": "Sample Quiz",
+    "description": "A test quiz",
+    "userId": "user123"
+  }
 }
 ```
 
@@ -138,39 +294,38 @@ Retrieves a quiz by its unique ID.
 
 ---
 
-### 2. Update a Quiz
-**Endpoint:**  
+### 2.4 Update a Quiz
+
+**Endpoint:**
 ```
-PUT /api/quizzes/{quizId}
+PUT /api/quiz/{quizId}
 ```
-**Description:**  
+**Description:**
 Updates an existing quiz.
 
-**Request Parameters:**  
+**Request Parameters:**
 - `quizId` (path) - Required, the unique ID of the quiz.
 
 **Request Body:**
 ```json
 {
-    "title": "updated title",
-    "description": "updated description"
+  "title": "Updated Quiz Title",
+  "description": "Updated description"
 }
 ```
 
-**Response:**  
+**Response:**
 ```json
 {
-    "quiz": {
-        "id": "26d11ac1-2a33-46e0-adda-044c0fa9aa90",
-        "title": "updated title",
-        "description": "updated description",
-        "userId": "1000",
-        "createdAt": "2025-02-14T10:31:50.604Z"
-    }
+  "quiz": {
+    "id": "123",
+    "title": "Updated Quiz Title",
+    "description": "Updated description"
+  }
 }
 ```
 
-**Error Responses:**  
+**Error Responses:**
 ```json
 {
   "error": "Quiz not found"
@@ -179,25 +334,26 @@ Updates an existing quiz.
 
 ---
 
-### 3. Delete a Quiz
-**Endpoint:**  
+### 2.5 Delete a Quiz
+
+**Endpoint:**
 ```
-DELETE /api/quizzes/{quizId}
+DELETE /api/quiz/{quizId}
 ```
-**Description:**  
+**Description:**
 Deletes a quiz by ID.
 
-**Request Parameters:**  
+**Request Parameters:**
 - `quizId` (path) - Required, the unique ID of the quiz.
 
-**Response:**  
+**Response:**
 ```json
 {
   "message": "Quiz deleted successfully"
 }
 ```
 
-**Error Responses:**  
+**Error Responses:**
 ```json
 {
   "error": "Quiz not found"
@@ -206,69 +362,40 @@ Deletes a quiz by ID.
 
 ---
 
-### 4. Get All Quizzes for a User
-**Endpoint:**  
+### 2.6 Get All Quizzes for a User
+
+**Endpoint:**
 ```
 GET /api/user-quizzes/{userId}
 ```
-**Description:**  
+**Description:**
 Retrieves all quizzes created by a specific user.
 
-**Request Parameters:**  
+**Request Parameters:**
 - `userId` (path) - Required, the unique ID of the user.
 
-**Response:**  
+**Response:**
 ```json
 {
-    "success": true,
-    "quizzes": [
-        {
-            "id": "440b0e0c-53cf-4f9f-beff-4877b19a357c",
-            "title": "test question 2",
-            "description": "test desc 2",
-            "userId": "1000",
-            "createdAt": "2025-02-14T18:50:07.896Z"
-        },
-        {
-            "id": "c96c062d-d5d3-4040-9348-d120e7914bbf",
-            "title": "test question 3",
-            "description": "test desc 3",
-            "userId": "1000",
-            "createdAt": "2025-02-14T18:50:12.924Z"
-        },
-        {
-            "id": "787f31cf-f5fe-4596-8ff9-e752d26e3ffe",
-            "title": "test question 4",
-            "description": "test desc 4",
-            "userId": "1000",
-            "createdAt": "2025-02-14T18:50:18.973Z"
-        },
-        {
-            "id": "8860c687-8f0b-4cd3-92eb-76a693807bea",
-            "title": "test question 5",
-            "description": "test desc 5",
-            "userId": "1000",
-            "createdAt": "2025-02-14T18:50:24.027Z"
-        },
-        {
-            "id": "59702d19-416b-461b-bc9f-58d887cfd601",
-            "title": "what is the capital of India",
-            "description": "give a brief description about india\n",
-            "userId": "1000",
-            "createdAt": "2025-02-14T19:11:58.318Z"
-        },
-        {
-            "id": "f0c0cea3-c934-41f5-8d33-c2e21f977de4",
-            "title": "updated title new",
-            "description": "updated description",
-            "userId": "1000",
-            "createdAt": "2025-02-14T18:50:00.480Z"
-        }
-    ]
+  "success": true,
+  "quizzes": [
+    {
+      "id": "123",
+      "title": "Sample Quiz",
+      "description": "A test quiz",
+      "userId": "user123"
+    },
+    {
+      "id": "124",
+      "title": "Another Quiz",
+      "description": "Another test quiz",
+      "userId": "user123"
+    }
+  ]
 }
 ```
 
-**Error Responses:**  
+**Error Responses:**
 ```json
 {
   "error": "Failed to fetch quizzes"
@@ -279,10 +406,12 @@ Retrieves all quizzes created by a specific user.
 
 ## Error Handling
 
-| Status Code | Message                  | Description                           |
-|-------------|--------------------------|---------------------------------------|
-| 404         | "Quiz not found"         | The requested quiz does not exist.   |
-| 500         | "Server error"           | Something went wrong on the server.  |
+| Status Code | Message          | Description                         |
+| ----------- | ---------------- | ----------------------------------- |
+| 400         | "Invalid input"  | The provided data is incorrect.    |
+| 401         | "Unauthorized"   | Authentication is required.        |
+| 404         | "Quiz not found" | The requested quiz does not exist.  |
+| 500         | "Server error"   | Something went wrong on the server. |
 
 ---
 
@@ -293,5 +422,4 @@ Currently, no rate limits are enforced.
 ---
 
 This API documentation provides an overview of how to interact with the Quiz Management system. If you have any issues, feel free to contact the developer.
-
 
