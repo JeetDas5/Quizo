@@ -112,15 +112,6 @@ http://localhost:3000/api
 
 ---
 
-## Authentication
-
-This API requires authentication via JWT tokens. Include your token in the `Authorization` header:
-
-```
-Authorization: Bearer <your_token>
-```
-
----
 
 ## Endpoints
 
