@@ -21,7 +21,7 @@ Provide step-by-step instructions on how to install and set up your project. For
    ```
 2. Navigate to the project directory:
    ```bash
-   cd your-project
+   cd Quizo
    ```
 3. Install dependencies:
    ```bash
