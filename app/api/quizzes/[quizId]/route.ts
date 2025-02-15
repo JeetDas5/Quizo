@@ -1,10 +1,15 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { quizId: string } }) {
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ quizId: string }> }
+) {
   try {
+    const { quizId } = await context.params;
+
     const quiz = await prisma.quiz.findUnique({
-      where: { id: params.quizId },
+      where: { id: quizId },
     });
 
     if (!quiz) {
@@ -12,17 +17,20 @@ export async function GET(req: NextRequest, { params }: { params: { quizId: stri
     }
 
     return NextResponse.json({ success: true, quiz });
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch quiz" }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: "Failed to fetch quiz", message: error.message },
+      { status: 500 }
+    );
   }
 }
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { quizId: string } }
+  context: { params: Promise<{ quizId: string }> }
 ) {
   try {
-    const quizId = params.quizId;
+    const { quizId } = await context.params;
     const { title, description } = await req.json();
 
     const existingQuiz = await prisma.quiz.findUnique({
@@ -31,27 +39,20 @@ export async function PUT(
 
     if (!existingQuiz) {
       return NextResponse.json(
-        {
-          error: "Quiz not found",
-        },
-        {
-          status: 404,
-        }
+        { error: "Quiz not found" },
+        { status: 404 }
       );
     }
 
     const quiz = await prisma.quiz.update({
       where: { id: quizId },
-      data: {
-        title,
-        description,
-      },
+      data: { title, description },
     });
 
     return NextResponse.json({ quiz }, { status: 200 });
-  } catch (error) {
+  } catch (error: any) {
     return NextResponse.json(
-      { message: "Error in updating the quiz" },
+      { message: "Error in updating the quiz", error: error.message },
       { status: 500 }
     );
   }
@@ -59,26 +60,19 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { quizId: string } }
+  context: { params: Promise<{ quizId: string }> }
 ) {
   try {
-    const quizId = await params.quizId;
+    const { quizId } = await context.params;
 
-    const existingQuiz = prisma.quiz.findUnique({
+    const existingQuiz = await prisma.quiz.findUnique({
       where: { id: quizId },
-      include:{
-        user: true
-      }
     });
 
     if (!existingQuiz) {
       return NextResponse.json(
-        {
-          message: "Quiz not found",
-        },
-        {
-          status: 404,
-        }
+        { message: "Quiz not found" },
+        { status: 404 }
       );
     }
 
@@ -86,10 +80,13 @@ export async function DELETE(
       where: { id: quizId },
     });
 
-    return NextResponse.json({ message: "Quiz deleted succefully" }, { status: 200 });
-  } catch (error) {
     return NextResponse.json(
-      { message: "Error in deleting the quiz" },
+      { message: "Quiz deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: "Error in deleting the quiz", error: error.message },
       { status: 500 }
     );
   }

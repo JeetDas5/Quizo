@@ -32,37 +32,45 @@ export default function Dashboard() {
   const [error, setError] = useState("");
   const [selectedQuiz, setSelectedQuiz] = useState<string | null>(null);
   const router = useRouter();
-
-  const getUserId = () => {
-    const userId = localStorage.getItem("userId");
-    const expiryTime = localStorage.getItem("userExpiry");
-
-    if (!userId || !expiryTime) return null;
-
-    if (Date.now() > Number(expiryTime)) {
-      localStorage.removeItem("userId");
-      localStorage.removeItem("userExpiry");
-      return null;
-    }
-
-    return userId;
-  };
-
-  const userId = getUserId();
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchQuizzes = async () => {
-      try {
-        const response = await axios.get(`/api/user-quizzes/${userId}`);
-        setQuizzes(response.data.quizzes);
-      } catch (error) {
-        setError("Failed to load quizzes");
-      } finally {
-        setLoading(false);
+    // This code runs only on the client side
+    const getUserId = () => {
+      const userId = localStorage.getItem("userId");
+      const expiryTime = localStorage.getItem("userExpiry");
+
+      if (!userId || !expiryTime) return null;
+
+      if (Date.now() > Number(expiryTime)) {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("userExpiry");
+        return null;
       }
+
+      return userId;
     };
 
-    fetchQuizzes();
+    const id = getUserId();
+    setUserId(id);
+
+    if (id) {
+      const fetchQuizzes = async () => {
+        try {
+          const response = await axios.get(`/api/user-quizzes/${id}`);
+          setQuizzes(response.data.quizzes);
+        } catch (error) {
+          setError("Failed to load quizzes");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchQuizzes();
+    } else {
+      setLoading(false);
+      setError("User not authenticated");
+    }
   }, []);
 
   const handleEdit = async (id: string) => {
@@ -83,6 +91,24 @@ export default function Dashboard() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen p-6 bg-background text-foreground">
+        <h1 className="text-2xl font-bold mb-4">Your Quizzes</h1>
+        <Skeleton className="h-40 w-full bg-muted" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen p-6 bg-background text-foreground">
+        <h1 className="text-2xl font-bold mb-4">Your Quizzes</h1>
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen p-6 bg-background text-foreground">
       <h1 className="text-2xl font-bold mb-4">Your Quizzes</h1>
@@ -90,11 +116,7 @@ export default function Dashboard() {
         + Create Quiz
       </Button>
 
-      {loading ? (
-        <Skeleton className="h-40 w-full bg-muted" />
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : quizzes.length === 0 ? (
+      {quizzes.length === 0 ? (
         <p>No quizzes found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
